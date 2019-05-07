@@ -1,4 +1,4 @@
 from hcluster.singlelink import SingleLinkClust
 
-new = SingleLinkClust(10)
+new = SingleLinkClust()
 print(new)
