@@ -22,18 +22,14 @@ class SingleLinkClust(object):
         Which linkage algorithm to use.
 
     """
-    def __init__(self, n_clusters, method="naive"):
-        self.n_clusters = n_clusters
+    def __init__(self, method="naive"):
         self.method = method
+        self.linkage_matrix = None
         
-        #TODO: add labels_ propery
+        # TODO: add labels_ propery
 
         if method not in ("naive", "mst"):
             raise ValueError("Invalid method, must be naive or mst")
-        
-        if self.n_clusters < 0:
-            raise ValueError("Number of clusters must be positive")
-
 
     def fit(self, df):
         """ Compute linkage matrix and returns model """
@@ -50,9 +46,20 @@ class SingleLinkClust(object):
 
         return self
 
-    def fit_predict(self, df):
+    def predict(self, n_clusters):
+        if self.linkage_matrix is None:
+            raise ValueError("Linkage matrix does not exits. First, fit the model")
+                
+        if n_clusters < 0:
+            raise ValueError("Number of clusters must be positive")
+
+        self.labels = fcluster(self.linkage_matrix, n_clusters, criterion='maxclust')
+        
+        return self.labels
+
+    def fit_predict(self, df, n_clusters):
         """ Fit model and returns clusters labels """
         _ = self.fit(df)
-        self.labels = fcluster(self.linkage_matrix, self.n_clusters, criterion='maxclust')
+        _ = self.predict(n_clusters)
 
         return self.labels
